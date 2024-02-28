@@ -8,7 +8,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
 
-public class DataSource {
+public class ConnectionPool {
     private static final HikariConfig config = new HikariConfig();
     private static final HikariDataSource connectionPool;
 
@@ -21,7 +21,7 @@ public class DataSource {
         connectionPool = new HikariDataSource(config);
     }
 
-    private DataSource() {
+    private ConnectionPool() {
     }
 
     public static Connection getConnection(){
