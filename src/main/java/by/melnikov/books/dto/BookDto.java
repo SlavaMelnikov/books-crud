@@ -1,10 +1,12 @@
 package by.melnikov.books.dto;
 
+import by.melnikov.books.entity.Book;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.function.Function;
 
 @Getter
 @Setter
