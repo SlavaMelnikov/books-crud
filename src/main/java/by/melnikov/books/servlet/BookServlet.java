@@ -1,14 +1,10 @@
 package by.melnikov.books.servlet;
 
-import by.melnikov.books.dto.AuthorDto;
 import by.melnikov.books.dto.BookDto;
 import by.melnikov.books.exception.ControllerException;
-import by.melnikov.books.service.AuthorService;
 import by.melnikov.books.service.BookService;
-import by.melnikov.books.service.impl.AuthorServiceImpl;
 import by.melnikov.books.service.impl.BookServiceImpl;
 import com.google.gson.Gson;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,46 +15,82 @@ import java.io.IOException;
 
 @WebServlet("/book")
 public class BookServlet extends HttpServlet {
+    private static final String RESPONSE_TYPE = "application/json";
+    private static final String ID_REQUEST_PARAMETER = "id";
+    private static final String TITLE_REQUEST_PARAMETER = "title";
     private final BookService bookService;
-    private final AuthorService authorService;
     private final Gson gson;
 
     public BookServlet() {
         bookService = new BookServiceImpl();
-        authorService = new AuthorServiceImpl();
         gson = new Gson();
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) {
-        response.setContentType("application/json");
-        String requestParameter = request.getParameter("id");
+        response.setContentType(RESPONSE_TYPE);
+        String bookId = request.getParameter(ID_REQUEST_PARAMETER);
+        String bookTitle = request.getParameter(TITLE_REQUEST_PARAMETER);
+        BookDto foundBookDto;
         try {
-            int id = Integer.parseInt(requestParameter);
-            BookDto bookDto = bookService.findBookById(id);
-            if (bookDto == null) {
-                response.getWriter().write("\"response\": \"\"book with such id not found\"}");
+            if (bookId != null) {
+                int id = Integer.parseInt(bookId);
+                foundBookDto = bookService.findBookById(id);
+            } else {
+                foundBookDto = bookService.findBookByTitle(bookTitle.replaceAll("_", " "));
             }
-            String jsonString = gson.toJson(bookDto);
+            String jsonString = gson.toJson(foundBookDto);
             response.getWriter().write(jsonString);
         } catch (NumberFormatException e) {
-            throw new ControllerException(String.format("Your id (%s) are not a number.", requestParameter));
+            throw new ControllerException("Your request parameter is incorrect.");
         } catch (IOException e) {
             throw new ControllerException("Error while sending a response");
         }
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setContentType("application/json");
-        String requestBody = getJsonStringFromRequest(request);
-        BookDto bookDto = gson.fromJson(requestBody, BookDto.class);
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) {
+        response.setContentType(RESPONSE_TYPE);
+        BookDto bookDto = getBookDtoFromRequestBody(request);
         bookService.addNewBook(bookDto);
-        response.getWriter().write("{\"response\": \"book was successfully added\"}");
+        try {
+            response.getWriter().write("{\"response\": \"book was successfully added\"}");
+        } catch (IOException e) {
+            throw new ControllerException("Error while sending a found book as a response");
+        }
     }
 
-    private String getJsonStringFromRequest(HttpServletRequest request) {
-        StringBuilder jsonString = null;
+    @Override
+    protected void doPut(HttpServletRequest request, HttpServletResponse response) {
+        response.setContentType(RESPONSE_TYPE);
+        BookDto bookDto = getBookDtoFromRequestBody(request);
+        bookService.updatePrice(bookDto);
+    }
+
+    @Override
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) {
+        response.setContentType(RESPONSE_TYPE);
+        String bookId = request.getParameter(ID_REQUEST_PARAMETER);
+        String bookTitle = request.getParameter(TITLE_REQUEST_PARAMETER);
+        BookDto removedBookDto;
+        try {
+            if (bookId != null) {
+                int id = Integer.parseInt(bookId);
+                removedBookDto = bookService.removeBookById(id);
+            } else {
+                removedBookDto = bookService.removeBookByTitle(bookTitle.replaceAll("_", " "));
+            }
+            String jsonString = gson.toJson(removedBookDto);
+            response.getWriter().write(jsonString);
+        } catch (NumberFormatException e) {
+            throw new ControllerException("Your request parameter is incorrect.");
+        } catch (IOException e) {
+            throw new ControllerException("Error while sending a response");
+        }
+    }
+
+    private BookDto getBookDtoFromRequestBody(HttpServletRequest request) {
+        StringBuilder jsonString;
         try (BufferedReader reader = request.getReader()) {
             jsonString = new StringBuilder();
             String line;
@@ -68,6 +100,6 @@ public class BookServlet extends HttpServlet {
         } catch (IOException e) {
             throw new ControllerException("Error during parsing body of post method");
         }
-        return jsonString.toString();
+        return gson.fromJson(jsonString.toString(), BookDto.class);
     }
 }

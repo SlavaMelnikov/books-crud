@@ -30,7 +30,7 @@ public class AuthorDaoImpl implements AuthorDao {
                         .build();
             }
         } catch (SQLException e) {
-            throw new DaoException(String.format("Error while trying to get author by \"%s\" name: %s", name, e.getMessage()));
+            throw new DaoException(String.format("Error while trying to get author by \"%s\" name. %s", name, e.getMessage()));
         }
         return author;
     }

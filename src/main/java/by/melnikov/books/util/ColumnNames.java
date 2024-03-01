@@ -18,6 +18,7 @@ public class ColumnNames {
     public static final String BOOK_AUTHOR = "author";
     public static final String BOOK_PRICE = "price";
 
+
     /*
     Table "store"
      */

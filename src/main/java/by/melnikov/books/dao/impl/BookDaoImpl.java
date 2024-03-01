@@ -6,7 +6,6 @@ import by.melnikov.books.entity.Author;
 import by.melnikov.books.entity.Book;
 import by.melnikov.books.entity.Store;
 import by.melnikov.books.exception.DaoException;
-import com.zaxxer.hikari.pool.ProxyCallableStatement;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -22,8 +21,7 @@ public class BookDaoImpl implements BookDao {
         try (Connection connection = ConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(FIND_BOOK_BY_ID)) {
             preparedStatement.setInt(1, id);
-            preparedStatement.executeQuery();
-            ResultSet resultSet = preparedStatement.getResultSet();
+            ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 Author author = Author
                         .builder()
@@ -38,7 +36,7 @@ public class BookDaoImpl implements BookDao {
                         .build();
             }
         } catch (SQLException e) {
-            throw new DaoException(String.format("Error while trying to get book by id %d: %s", id, e.getMessage()));
+            throw new DaoException(String.format("Error while trying to get book by id %d. %s", id, e.getMessage()));
         }
         return book;
     }
@@ -49,8 +47,7 @@ public class BookDaoImpl implements BookDao {
         try (Connection connection = ConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(FIND_BOOK_BY_TITLE)) {
             preparedStatement.setString(1, title);
-            preparedStatement.executeQuery();
-            ResultSet resultSet = preparedStatement.getResultSet();
+            ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 Author author = Author
                         .builder()
@@ -65,15 +62,20 @@ public class BookDaoImpl implements BookDao {
                         .build();
             }
         } catch (SQLException e) {
-            throw new DaoException(String.format("Error while trying to get book by title \"%s\": %s", title, e.getMessage()));
+            throw new DaoException(String.format("Error while trying to get book by title \"%s\". %s", title, e.getMessage()));
         }
         return book;
     }
 
     @Override
+    public List<Store> findAllStoresWithBook(Book book) {
+        return null;
+    }
+
+    @Override
     public void addNewBook(Book book) {
         try (Connection connection = ConnectionPool.getConnection();
-             CallableStatement callableStatement = connection.prepareCall(ADD_BOOK_TO_STORES)) {
+             CallableStatement callableStatement = connection.prepareCall(ADD_NEW_BOOK)) {
             List<String> storesAddresses = new ArrayList<>();
             book.getStores().stream().forEach(store -> storesAddresses.add(store.getAddress()));
             Array storesSqlArray = connection.createArrayOf("text", storesAddresses.toArray());
@@ -83,7 +85,44 @@ public class BookDaoImpl implements BookDao {
             callableStatement.setArray(4, storesSqlArray);
             callableStatement.execute();
         } catch (SQLException e) {
-            throw new DaoException(String.format("Error while trying to add new book: %s", e.getMessage()));
+            throw new DaoException(String.format("Error while trying to add new book. %s", e.getMessage()));
+        }
+    }
+
+    @Override
+    public void updatePrice(Book book) {
+        try (Connection connection = ConnectionPool.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_PRICE)) {
+            preparedStatement.setInt(1, book.getPrice());
+            preparedStatement.setString(2, book.getTitle());
+            preparedStatement.execute();
+        } catch (SQLException e) {
+            throw new DaoException(String.format("Error while trying to update book price. %s", e.getMessage()));
+        }
+    }
+
+
+    @Override
+    public void removeBookById(int id) {
+        try (Connection connection = ConnectionPool.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(REMOVE_BOOK_BY_ID)) {
+            preparedStatement.setInt(1, id);
+            preparedStatement.execute();
+        } catch (SQLException e) {
+            throw new DaoException(String.format("Error while trying to remove book by id %d. %s", id, e.getMessage()));
+        }
+    }
+
+    @Override
+    public void removeBookByTitle(String title) {
+        try (Connection connection = ConnectionPool.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(REMOVE_BOOK_BY_TITLE)) {
+            preparedStatement.setString(1, title);
+            preparedStatement.execute();
+        } catch (SQLException e) {
+            throw new DaoException(String.format("Error while trying to remove book by title %s. %s",
+                    title,
+                    e.getMessage()));
         }
     }
 }

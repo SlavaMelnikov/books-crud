@@ -19,7 +19,22 @@ public class Queries {
                                                         JOIN author a ON b.author = a.author_id
                                                         WHERE b.title = ?
                                                     """;
-    public static final String ADD_BOOK_TO_STORES = "CALL add_book(?, ?, ?, ?)";
+    public static final String ADD_NEW_BOOK = "CALL add_book(?, ?, ?, ?)";
+
+    public static final String UPDATE_PRICE = """
+                                                 UPDATE book
+                                                 SET price = ?
+                                                 WHERE title = ?
+                                                 RETURNING price;
+                                              """;
+    public static final String REMOVE_BOOK_BY_ID = """
+                                                      DELETE FROM book
+                                                      WHERE book_id = ?
+                                                   """;
+    public static final String REMOVE_BOOK_BY_TITLE = """
+                                                         DELETE FROM book
+                                                         WHERE title = ?
+                                                      """;
 
     /*
     Queries for AuthorDao

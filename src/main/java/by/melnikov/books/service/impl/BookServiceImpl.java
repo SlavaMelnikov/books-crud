@@ -27,12 +27,18 @@ public class BookServiceImpl implements BookService {
     @Override
     public BookDto findBookById(int id) {
         Book book = bookDao.findBookById(id);
+        if (book == null) {
+            throw new ServiceException(String.format("Not found book with id %d. ",  id));
+        }
         return BookMapper.INSTANCE.bookToBookDto(book);
     }
 
     @Override
     public BookDto findBookByTitle(String title) {
         Book book = bookDao.findBookByTitle(title);
+        if (book == null) {
+            throw new ServiceException(String.format("Not found book with title %s. ",  title));
+        }
         return BookMapper.INSTANCE.bookToBookDto(book);
     }
 
@@ -40,5 +46,34 @@ public class BookServiceImpl implements BookService {
     public void addNewBook(BookDto bookDto) {
         Book book = BookMapper.INSTANCE.bookDtoToBook(bookDto);
         bookDao.addNewBook(book);
+    }
+
+    @Override
+    public void updatePrice(BookDto bookDto) {
+        Book book = BookMapper.INSTANCE.bookDtoToBook(bookDto);
+        if (book.getPrice() < 0) {
+            throw new ServiceException("You can't make price negative");
+        }
+        bookDao.updatePrice(book);
+    }
+
+    @Override
+    public BookDto removeBookById(int id) {
+        Book book = bookDao.findBookById(id);
+        if (book == null) {
+            throw new ServiceException(String.format("Not found book with id: %d",  id));
+        }
+        bookDao.removeBookById(book.getId());
+        return BookMapper.INSTANCE.bookToBookDto(book);
+    }
+
+    @Override
+    public BookDto removeBookByTitle(String title) {
+        Book book = bookDao.findBookByTitle(title);
+        if (book == null) {
+            throw new ServiceException(String.format("Not found book with title: %s. ",  title));
+        }
+        bookDao.removeBookByTitle(book.getTitle());
+        return BookMapper.INSTANCE.bookToBookDto(book);
     }
 }
