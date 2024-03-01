@@ -49,19 +49,12 @@ public class BookServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/json");
         String requestBody = getJsonStringFromRequest(request);
         BookDto bookDto = gson.fromJson(requestBody, BookDto.class);
-        AuthorDto authorFromDB = authorService.findAuthorByName(bookDto.getAuthor().getName());
-        if (authorFromDB != null) {
-            if (bookService.findBookByTitle(bookDto.getTitle()) != null) {
-                response.getWriter().write("\"response\": \"book is already exist\"}");
-            }
-            bookDto.setAuthor(authorFromDB);
-        }
         bookService.addNewBook(bookDto);
-        response.getWriter().write("\"response\": \"book was successfully added\"}");
+        response.getWriter().write("{\"response\": \"book was successfully added\"}");
     }
 
     private String getJsonStringFromRequest(HttpServletRequest request) {

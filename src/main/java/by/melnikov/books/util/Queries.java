@@ -19,6 +19,7 @@ public class Queries {
                                                         JOIN author a ON b.author = a.author_id
                                                         WHERE b.title = ?
                                                     """;
+    public static final String ADD_BOOK_TO_STORES = "CALL add_book(?, ?, ?, ?)";
 
     /*
     Queries for AuthorDao
@@ -27,4 +28,5 @@ public class Queries {
                                                         SELECT * FROM author
                                                         WHERE name = ?
                                                      """;
+
 }

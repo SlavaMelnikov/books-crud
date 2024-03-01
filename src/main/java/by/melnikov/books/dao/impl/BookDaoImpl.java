@@ -4,16 +4,16 @@ import by.melnikov.books.connection.ConnectionPool;
 import by.melnikov.books.dao.BookDao;
 import by.melnikov.books.entity.Author;
 import by.melnikov.books.entity.Book;
+import by.melnikov.books.entity.Store;
 import by.melnikov.books.exception.DaoException;
+import com.zaxxer.hikari.pool.ProxyCallableStatement;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static by.melnikov.books.util.ColumnNames.*;
-import static by.melnikov.books.util.Queries.FIND_BOOK_BY_ID;
-import static by.melnikov.books.util.Queries.FIND_BOOK_BY_TITLE;
+import static by.melnikov.books.util.Queries.*;
 
 public class BookDaoImpl implements BookDao {
     @Override
@@ -72,6 +72,18 @@ public class BookDaoImpl implements BookDao {
 
     @Override
     public void addNewBook(Book book) {
-
+        try (Connection connection = ConnectionPool.getConnection();
+             CallableStatement callableStatement = connection.prepareCall(ADD_BOOK_TO_STORES)) {
+            List<String> storesAddresses = new ArrayList<>();
+            book.getStores().stream().forEach(store -> storesAddresses.add(store.getAddress()));
+            Array storesSqlArray = connection.createArrayOf("text", storesAddresses.toArray());
+            callableStatement.setString(1, book.getTitle());
+            callableStatement.setString(2, book.getAuthor().getName());
+            callableStatement.setInt(3, book.getPrice());
+            callableStatement.setArray(4, storesSqlArray);
+            callableStatement.execute();
+        } catch (SQLException e) {
+            throw new DaoException(String.format("Error while trying to add new book: %s", e.getMessage()));
+        }
     }
 }
