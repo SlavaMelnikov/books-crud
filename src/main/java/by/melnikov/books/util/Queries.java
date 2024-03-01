@@ -25,7 +25,6 @@ public class Queries {
                                                  UPDATE book
                                                  SET price = ?
                                                  WHERE title = ?
-                                                 RETURNING price;
                                               """;
     public static final String REMOVE_BOOK_BY_ID = """
                                                       DELETE FROM book
@@ -39,9 +38,23 @@ public class Queries {
     /*
     Queries for AuthorDao
      */
+    public static final String FIND_AUTHOR_BY_ID = """
+                                                        SELECT * FROM author
+                                                        WHERE author_id = ?
+                                                     """;
     public static final String FIND_AUTHOR_BY_NAME = """
                                                         SELECT * FROM author
                                                         WHERE name = ?
                                                      """;
+
+
+    public static final String REMOVE_AUTHOR_BY_ID = """
+                                                        DELETE FROM author
+                                                        WHERE author_id = ?
+                                                     """;
+    public static final String REMOVE_AUTHOR_BY_NAME = """
+                                                            DELETE FROM author
+                                                            WHERE name = ?
+                                                        """;
 
 }

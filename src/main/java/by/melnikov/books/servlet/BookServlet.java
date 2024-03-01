@@ -27,28 +27,6 @@ public class BookServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) {
-        response.setContentType(RESPONSE_TYPE);
-        String bookId = request.getParameter(ID_REQUEST_PARAMETER);
-        String bookTitle = request.getParameter(TITLE_REQUEST_PARAMETER);
-        BookDto foundBookDto;
-        try {
-            if (bookId != null) {
-                int id = Integer.parseInt(bookId);
-                foundBookDto = bookService.findBookById(id);
-            } else {
-                foundBookDto = bookService.findBookByTitle(bookTitle.replaceAll("_", " "));
-            }
-            String jsonString = gson.toJson(foundBookDto);
-            response.getWriter().write(jsonString);
-        } catch (NumberFormatException e) {
-            throw new ControllerException("Your request parameter is incorrect.");
-        } catch (IOException e) {
-            throw new ControllerException("Error while sending a response");
-        }
-    }
-
-    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) {
         response.setContentType(RESPONSE_TYPE);
         BookDto bookDto = getBookDtoFromRequestBody(request);
@@ -68,19 +46,30 @@ public class BookServlet extends HttpServlet {
     }
 
     @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) {
+        processRequest(request, response, true);
+    }
+
+    @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) {
+        processRequest(request, response, false);
+    }
+
+    private void processRequest(HttpServletRequest request, HttpServletResponse response, boolean isGet) {
         response.setContentType(RESPONSE_TYPE);
         String bookId = request.getParameter(ID_REQUEST_PARAMETER);
         String bookTitle = request.getParameter(TITLE_REQUEST_PARAMETER);
-        BookDto removedBookDto;
+        BookDto bookDto;
         try {
             if (bookId != null) {
                 int id = Integer.parseInt(bookId);
-                removedBookDto = bookService.removeBookById(id);
+                bookDto = isGet ? bookService.findBookById(id)
+                                : bookService.removeBookById(id);
             } else {
-                removedBookDto = bookService.removeBookByTitle(bookTitle.replaceAll("_", " "));
+                bookDto = isGet ? bookService.findBookByTitle(bookTitle.replaceAll("_", " "))
+                                : bookService.removeBookByTitle(bookTitle.replaceAll("_", " "));
             }
-            String jsonString = gson.toJson(removedBookDto);
+            String jsonString = gson.toJson(bookDto);
             response.getWriter().write(jsonString);
         } catch (NumberFormatException e) {
             throw new ControllerException("Your request parameter is incorrect.");
