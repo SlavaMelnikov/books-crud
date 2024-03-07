@@ -1,6 +1,8 @@
 package by.melnikov.books.servlet;
 
+import by.melnikov.books.dto.AuthorDto;
 import by.melnikov.books.dto.BookDto;
+import by.melnikov.books.dto.StoreDto;
 import by.melnikov.books.exception.ControllerException;
 import by.melnikov.books.service.BookService;
 import by.melnikov.books.service.impl.BookServiceImpl;
@@ -12,8 +14,9 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.List;
 
-@WebServlet("/book")
+@WebServlet("/book/*")
 public class BookServlet extends HttpServlet {
     private static final String RESPONSE_TYPE = "application/json";
     private static final String ID_REQUEST_PARAMETER = "id";
@@ -54,9 +57,37 @@ public class BookServlet extends HttpServlet {
         }
     }
 
+    private BookDto getBookDtoFromRequestBody(HttpServletRequest request) {
+        StringBuilder jsonString;
+        try (BufferedReader reader = request.getReader()) {
+            jsonString = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                jsonString.append(line);
+            }
+        } catch (IOException e) {
+            throw new ControllerException("Error during parsing body request body.");
+        }
+        return gson.fromJson(jsonString.toString(), BookDto.class);
+    }
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) {
-        processRequest(request, response, true);
+        if (request.getPathInfo() != null && request.getPathInfo().equals("/stores") ) {
+            String bookTitle = request.getParameter(TITLE_REQUEST_PARAMETER).replaceAll("_", " ");
+            BookDto bookDto = BookDto.builder()
+                    .title(bookTitle)
+                    .build();
+            List<StoreDto> allStoresWithBook = bookService.findAllStoresWithBook(bookDto);
+            String jsonString = gson.toJson(allStoresWithBook);
+            try {
+                response.getWriter().write(jsonString);
+            } catch (IOException e) {
+                throw new ControllerException("Error while sending a response");
+            }
+        } else {
+            processRequest(request, response, true);
+        }
     }
 
     @Override
@@ -85,19 +116,5 @@ public class BookServlet extends HttpServlet {
         } catch (IOException e) {
             throw new ControllerException("Error while sending a response");
         }
-    }
-
-    private BookDto getBookDtoFromRequestBody(HttpServletRequest request) {
-        StringBuilder jsonString;
-        try (BufferedReader reader = request.getReader()) {
-            jsonString = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                jsonString.append(line);
-            }
-        } catch (IOException e) {
-            throw new ControllerException("Error during parsing body request body.");
-        }
-        return gson.fromJson(jsonString.toString(), BookDto.class);
     }
 }

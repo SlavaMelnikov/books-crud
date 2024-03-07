@@ -69,7 +69,22 @@ public class BookDaoImpl implements BookDao {
 
     @Override
     public List<Store> findAllStoresWithBook(Book book) {
-        return null;
+        List<Store> allStoresWithBook = new ArrayList<>();
+        try (Connection connection = ConnectionPool.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL_STORES_WITH_BOOK)) {
+            preparedStatement.setString(1, book.getTitle());
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                Store store = Store.builder()
+                        .id(resultSet.getInt(STORE_ID))
+                        .address(resultSet.getString(STORE_ADDRESS))
+                        .build();
+                allStoresWithBook.add(store);
+            }
+        } catch (SQLException e) {
+            throw new DaoException(String.format("Error while trying to find all stores with this book. %s", e.getMessage()));
+        }
+        return allStoresWithBook;
     }
 
     @Override

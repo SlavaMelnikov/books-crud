@@ -19,6 +19,13 @@ public class Queries {
                                                         JOIN author a ON b.author = a.author_id
                                                         WHERE b.title = ?
                                                     """;
+    public static final String FIND_ALL_STORES_WITH_BOOK = """
+                                                              SELECT s.store_id, s.address
+                                                              FROM store s
+                                                              JOIN store_has_books sb ON s.store_id = sb.store_id
+                                                              JOIN book b ON sb.book_id = b.book_id
+                                                              WHERE b.title = ?;
+                                                           """;
     public static final String ADD_NEW_BOOK = "CALL add_book(?, ?, ?, ?)";
 
     public static final String UPDATE_PRICE = """
@@ -46,15 +53,16 @@ public class Queries {
                                                         SELECT * FROM author
                                                         WHERE name = ?
                                                      """;
+    public static final String FIND_ALL_AUTHOR_BOOKS = """
+                                                          SELECT book.book_id, book.title, book.price
+                                                          FROM book
+                                                          INNER JOIN author ON book.author = author.author_id
+                                                          WHERE author.name = ?;
+                                                       """;
 
     public static final String ADD_NEW_AUTHOR = """
                                                     INSERT INTO author (name) VALUES (?)
                                                 """;
-    public static final String UPDATE_NAME = """
-                                                 UPDATE author
-                                                 SET new_name = ?
-                                                 WHERE old_name = ?
-                                              """;
     public static final String REMOVE_AUTHOR_BY_ID = """
                                                         DELETE FROM author
                                                         WHERE author_id = ?

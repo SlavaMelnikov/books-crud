@@ -5,8 +5,10 @@ import by.melnikov.books.dao.impl.AuthorDaoImpl;
 import by.melnikov.books.dto.AuthorDto;
 import by.melnikov.books.dto.BookDto;
 import by.melnikov.books.entity.Author;
+import by.melnikov.books.entity.Book;
 import by.melnikov.books.exception.ServiceException;
 import by.melnikov.books.mapper.AuthorMapper;
+import by.melnikov.books.mapper.BookMapper;
 import by.melnikov.books.service.AuthorService;
 
 import java.util.List;
@@ -38,14 +40,19 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     public List<BookDto> findAllAuthorBooks(AuthorDto authorDto) {
-        return null;
+        Author author = AuthorMapper.INSTANCE.authorDtoToAuthor(authorDto);
+        findAuthorByName(author.getName());
+        List<Book> allAuthorBooks = authorDao.findAllAuthorBooks(author);
+        return BookMapper.INSTANCE.listBooksToListBooksDto(allAuthorBooks);
     }
 
     @Override
     public boolean addNewAuthor(AuthorDto authorDto) {
         Author author = AuthorMapper.INSTANCE.authorDtoToAuthor(authorDto);
         boolean wasAdded = false;
-        if (findAuthorByName(author.getName()) != null) {
+        try {
+            findAuthorByName(author.getName());
+        } catch (ServiceException e) {
             authorDao.addNewAuthor(author);
             wasAdded = true;
         }

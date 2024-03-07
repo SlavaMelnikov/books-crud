@@ -7,6 +7,7 @@ import by.melnikov.books.entity.Book;
 import by.melnikov.books.exception.DaoException;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 import static by.melnikov.books.util.ColumnNames.*;
@@ -55,7 +56,23 @@ public class AuthorDaoImpl implements AuthorDao {
 
     @Override
     public List<Book> findAllAuthorBooks(Author author) {
-        return null;
+        List<Book> allAuthorBooks = new ArrayList<>();
+        try (Connection connection = ConnectionPool.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL_AUTHOR_BOOKS)) {
+            preparedStatement.setString(1, author.getName());
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                Book book = Book.builder()
+                        .id(resultSet.getInt(BOOK_ID))
+                        .title(resultSet.getString(BOOK_TITLE))
+                        .price(resultSet.getInt(BOOK_PRICE))
+                        .build();
+                allAuthorBooks.add(book);
+            }
+        } catch (SQLException e) {
+            throw new DaoException(String.format("Error while trying to find all author's books. %s", e.getMessage()));
+        }
+        return allAuthorBooks;
     }
 
     @Override
