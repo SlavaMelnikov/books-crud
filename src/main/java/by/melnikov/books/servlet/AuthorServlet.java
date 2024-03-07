@@ -1,7 +1,6 @@
 package by.melnikov.books.servlet;
 
 import by.melnikov.books.dto.AuthorDto;
-import by.melnikov.books.dto.BookDto;
 import by.melnikov.books.exception.ControllerException;
 import by.melnikov.books.service.AuthorService;
 import by.melnikov.books.service.impl.AuthorServiceImpl;
@@ -11,6 +10,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 
 @WebServlet("/author")
@@ -24,6 +24,28 @@ public class AuthorServlet extends HttpServlet {
     public AuthorServlet() {
         authorService = new AuthorServiceImpl();
         gson = new Gson();
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) {
+        response.setContentType(RESPONSE_TYPE);
+        AuthorDto authorDto = getAuthorDtoFromRequestBody(request);
+        boolean result = authorService.addNewAuthor(authorDto);
+        try {
+            if (result) {
+                response.getWriter().write("{\"response\": \"new author was successfully added\"}");
+            } else {
+                response.getWriter().write("{\"response\": \"this author already exist\"}");
+            }
+        } catch (IOException e) {
+            throw new ControllerException("Error while sending a response");
+        }
+    }
+
+    @Override
+    protected void doPut(HttpServletRequest request, HttpServletResponse response) {
+        response.setContentType(RESPONSE_TYPE);
+
     }
 
     @Override
@@ -57,5 +79,19 @@ public class AuthorServlet extends HttpServlet {
         } catch (IOException e) {
             throw new ControllerException("Error while sending a response");
         }
+    }
+
+    private AuthorDto getAuthorDtoFromRequestBody(HttpServletRequest request) {
+        StringBuilder jsonString;
+        try (BufferedReader reader = request.getReader()) {
+            jsonString = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                jsonString.append(line);
+            }
+        } catch (IOException e) {
+            throw new ControllerException("Error during parsing request body.");
+        }
+        return gson.fromJson(jsonString.toString(), AuthorDto.class);
     }
 }

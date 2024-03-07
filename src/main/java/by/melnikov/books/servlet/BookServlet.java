@@ -34,7 +34,7 @@ public class BookServlet extends HttpServlet {
         try {
             response.getWriter().write("{\"response\": \"book was successfully added\"}");
         } catch (IOException e) {
-            throw new ControllerException("Error while sending a found book as a response");
+            throw new ControllerException("Error while sending a response.");
         }
     }
 
@@ -42,7 +42,16 @@ public class BookServlet extends HttpServlet {
     protected void doPut(HttpServletRequest request, HttpServletResponse response) {
         response.setContentType(RESPONSE_TYPE);
         BookDto bookDto = getBookDtoFromRequestBody(request);
-        bookService.updatePrice(bookDto);
+        boolean result = bookService.updatePrice(bookDto);
+        try {
+            if (result) {
+                response.getWriter().write("{\"response\": \"price was successfully update\"}");
+            } else {
+                response.getWriter().write("{\"response\": \"price wasn't updated\"}");
+            }
+        } catch (IOException e) {
+            throw new ControllerException("Error while sending a response");
+        }
     }
 
     @Override
@@ -87,7 +96,7 @@ public class BookServlet extends HttpServlet {
                 jsonString.append(line);
             }
         } catch (IOException e) {
-            throw new ControllerException("Error during parsing body of post method");
+            throw new ControllerException("Error during parsing body request body.");
         }
         return gson.fromJson(jsonString.toString(), BookDto.class);
     }

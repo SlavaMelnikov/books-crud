@@ -47,7 +47,14 @@ public class Queries {
                                                         WHERE name = ?
                                                      """;
 
-
+    public static final String ADD_NEW_AUTHOR = """
+                                                    INSERT INTO author (name) VALUES (?)
+                                                """;
+    public static final String UPDATE_NAME = """
+                                                 UPDATE author
+                                                 SET new_name = ?
+                                                 WHERE old_name = ?
+                                              """;
     public static final String REMOVE_AUTHOR_BY_ID = """
                                                         DELETE FROM author
                                                         WHERE author_id = ?

@@ -3,10 +3,13 @@ package by.melnikov.books.service.impl;
 import by.melnikov.books.dao.AuthorDao;
 import by.melnikov.books.dao.impl.AuthorDaoImpl;
 import by.melnikov.books.dto.AuthorDto;
+import by.melnikov.books.dto.BookDto;
 import by.melnikov.books.entity.Author;
 import by.melnikov.books.exception.ServiceException;
 import by.melnikov.books.mapper.AuthorMapper;
 import by.melnikov.books.service.AuthorService;
+
+import java.util.List;
 
 public class AuthorServiceImpl implements AuthorService {
     private final AuthorDao authorDao;
@@ -34,18 +37,19 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
-    public void addAuthor(AuthorDto authorDto) {
-        Author author = AuthorMapper.INSTANCE.authorDtoToAuthor(authorDto);
-        authorDao.addAuthor(author);
+    public List<BookDto> findAllAuthorBooks(AuthorDto authorDto) {
+        return null;
     }
 
     @Override
-    public void updateName(AuthorDto authorDto) {
+    public boolean addNewAuthor(AuthorDto authorDto) {
         Author author = AuthorMapper.INSTANCE.authorDtoToAuthor(authorDto);
-        if (author.getName() == null) {
-            throw new ServiceException("You can't update name. Name is null or incorrect");
+        boolean wasAdded = false;
+        if (findAuthorByName(author.getName()) != null) {
+            authorDao.addNewAuthor(author);
+            wasAdded = true;
         }
-        authorDao.updateName(author);
+        return wasAdded;
     }
 
     @Override

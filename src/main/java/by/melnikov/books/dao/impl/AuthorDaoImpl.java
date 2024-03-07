@@ -6,10 +6,7 @@ import by.melnikov.books.entity.Author;
 import by.melnikov.books.entity.Book;
 import by.melnikov.books.exception.DaoException;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.List;
 
 import static by.melnikov.books.util.ColumnNames.*;
@@ -62,13 +59,14 @@ public class AuthorDaoImpl implements AuthorDao {
     }
 
     @Override
-    public void addAuthor(Author author) {
-
-    }
-
-    @Override
-    public void updateName(Author author) {
-
+    public void addNewAuthor(Author author) {
+        try (Connection connection = ConnectionPool.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(ADD_NEW_AUTHOR)) {
+            preparedStatement.setString(1, author.getName());
+            preparedStatement.execute();
+        } catch (SQLException e) {
+            throw new DaoException(String.format("Error while trying to add new author. %s", e.getMessage()));
+        }
     }
 
     @Override
