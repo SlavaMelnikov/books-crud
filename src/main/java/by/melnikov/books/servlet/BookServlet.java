@@ -1,6 +1,5 @@
 package by.melnikov.books.servlet;
 
-import by.melnikov.books.dto.AuthorDto;
 import by.melnikov.books.dto.BookDto;
 import by.melnikov.books.dto.StoreDto;
 import by.melnikov.books.exception.ControllerException;
@@ -14,13 +13,13 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+
+import static by.melnikov.books.util.RequestParameters.*;
 
 @WebServlet("/book/*")
 public class BookServlet extends HttpServlet {
-    private static final String RESPONSE_TYPE = "application/json";
-    private static final String ID_REQUEST_PARAMETER = "id";
-    private static final String TITLE_REQUEST_PARAMETER = "title";
     private final BookService bookService;
     private final Gson gson;
 
@@ -37,7 +36,7 @@ public class BookServlet extends HttpServlet {
         try {
             response.getWriter().write("{\"response\": \"book was successfully added\"}");
         } catch (IOException e) {
-            throw new ControllerException("Error while sending a response.");
+            throw new ControllerException(String.format("Error while sending a response. %s", e));
         }
     }
 
@@ -53,7 +52,7 @@ public class BookServlet extends HttpServlet {
                 response.getWriter().write("{\"response\": \"price wasn't updated\"}");
             }
         } catch (IOException e) {
-            throw new ControllerException("Error while sending a response");
+            throw new ControllerException(String.format("Error while sending a response. %s", e));
         }
     }
 
@@ -66,7 +65,7 @@ public class BookServlet extends HttpServlet {
                 jsonString.append(line);
             }
         } catch (IOException e) {
-            throw new ControllerException("Error during parsing body request body.");
+            throw new ControllerException(String.format("Error during parsing request body. %s", e));
         }
         return gson.fromJson(jsonString.toString(), BookDto.class);
     }
@@ -74,16 +73,17 @@ public class BookServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) {
         if (request.getPathInfo() != null && request.getPathInfo().equals("/stores") ) {
-            String bookTitle = request.getParameter(TITLE_REQUEST_PARAMETER).replaceAll("_", " ");
+            String bookTitle = request.getParameter(TITLE_REQUEST_PARAMETER).replace("_", " ");
             BookDto bookDto = BookDto.builder()
                     .title(bookTitle)
+                    .stores(new ArrayList<>())
                     .build();
             List<StoreDto> allStoresWithBook = bookService.findAllStoresWithBook(bookDto);
             String jsonString = gson.toJson(allStoresWithBook);
             try {
                 response.getWriter().write(jsonString);
             } catch (IOException e) {
-                throw new ControllerException("Error while sending a response");
+                throw new ControllerException(String.format("Error while sending a response. %s", e));
             }
         } else {
             processRequest(request, response, true);
@@ -106,15 +106,15 @@ public class BookServlet extends HttpServlet {
                 bookDto = isGet ? bookService.findBookById(id)
                                 : bookService.removeBookById(id);
             } else {
-                bookDto = isGet ? bookService.findBookByTitle(bookTitle.replaceAll("_", " "))
-                                : bookService.removeBookByTitle(bookTitle.replaceAll("_", " "));
+                bookDto = isGet ? bookService.findBookByTitle(bookTitle.replace("_", " "))
+                                : bookService.removeBookByTitle(bookTitle.replace("_", " "));
             }
             String jsonString = gson.toJson(bookDto);
             response.getWriter().write(jsonString);
         } catch (NumberFormatException e) {
-            throw new ControllerException("Your request parameter is incorrect.");
+            throw new ControllerException(String.format("Your request parameter is incorrect. %s", e));
         } catch (IOException e) {
-            throw new ControllerException("Error while sending a response");
+            throw new ControllerException(String.format("Error while sending a response. %s", e));
         }
     }
 }

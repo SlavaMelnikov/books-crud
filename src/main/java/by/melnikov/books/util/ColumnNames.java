@@ -23,5 +23,5 @@ public class ColumnNames {
     Table "store"
      */
     public static final String STORE_ID = "store_id";
-    public static final String STORE_ADDRESS = "address";
+    public static final String STORE_CITY = "city";
 }

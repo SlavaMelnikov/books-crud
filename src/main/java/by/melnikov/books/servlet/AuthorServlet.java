@@ -13,13 +13,13 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+
+import static by.melnikov.books.util.RequestParameters.*;
 
 @WebServlet("/author/*")
 public class AuthorServlet extends HttpServlet {
-    private static final String RESPONSE_TYPE = "application/json";
-    private static final String ID_REQUEST_PARAMETER = "id";
-    private static final String NAME_REQUEST_PARAMETER = "name";
     private final AuthorService authorService;
     private final Gson gson;
 
@@ -40,7 +40,7 @@ public class AuthorServlet extends HttpServlet {
                 response.getWriter().write("{\"response\": \"this author already exist\"}");
             }
         } catch (IOException e) {
-            throw new ControllerException("Error while sending a response");
+            throw new ControllerException(String.format("Error while sending a response. %s", e));
         }
     }
 
@@ -53,7 +53,7 @@ public class AuthorServlet extends HttpServlet {
                 jsonString.append(line);
             }
         } catch (IOException e) {
-            throw new ControllerException("Error during parsing request body.");
+            throw new ControllerException(String.format("Error during parsing request body. %s", e));
         }
         return gson.fromJson(jsonString.toString(), AuthorDto.class);
     }
@@ -61,16 +61,17 @@ public class AuthorServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) {
         if (request.getPathInfo() != null && request.getPathInfo().equals("/books") ) {
-            String authorName = request.getParameter(NAME_REQUEST_PARAMETER).replaceAll("_", " ");
+            String authorName = request.getParameter(NAME_REQUEST_PARAMETER).replace("_", " ");
             AuthorDto authorDto = AuthorDto.builder()
                     .name(authorName)
+                    .books(new ArrayList<>())
                     .build();
             List<BookDto> allAuthorBooks = authorService.findAllAuthorBooks(authorDto);
             String jsonString = gson.toJson(allAuthorBooks);
             try {
                 response.getWriter().write(jsonString);
             } catch (IOException e) {
-                throw new ControllerException("Error while sending a response");
+                throw new ControllerException(String.format("Error while sending a response. %s", e));
             }
         } else {
             processRequest(request, response, true);
@@ -93,15 +94,15 @@ public class AuthorServlet extends HttpServlet {
                 authorDto = isGet ? authorService.findAuthorById(id)
                                   : authorService.removeAuthorById(id);
             } else {
-                authorDto = isGet ? authorService.findAuthorByName(authorName.replaceAll("_", " "))
-                                  : authorService.removeAuthorByName(authorName.replaceAll("_", " "));
+                authorDto = isGet ? authorService.findAuthorByName(authorName.replace("_", " "))
+                                  : authorService.removeAuthorByName(authorName.replace("_", " "));
             }
             String jsonString = gson.toJson(authorDto);
             response.getWriter().write(jsonString);
         } catch (NumberFormatException e) {
-            throw new ControllerException("Your request parameter is incorrect.");
+            throw new ControllerException(String.format("Your  request parameter is incorrect. %s", e));
         } catch (IOException e) {
-            throw new ControllerException("Error while sending a response");
+            throw new ControllerException(String.format("Error while sending a response. %s", e));
         }
     }
 }

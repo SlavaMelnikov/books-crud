@@ -15,7 +15,7 @@ public interface StoreMapper {
     StoreDto storeToStoreDto(Store store);
 
     @InheritInverseConfiguration
-    Store storeDtoToStore(StoreDto storeDao);
+    Store storeDtoToStore(StoreDto storeDto);
 
     List<StoreDto> listStoresToListStoresDto(List<Store> stores);
 }

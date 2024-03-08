@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -11,6 +12,6 @@ import java.util.List;
 @Builder
 public class Store {
     private int id;
-    private String address;
+    private String city;
     private List<Book> books;
 }

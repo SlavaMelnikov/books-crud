@@ -69,7 +69,7 @@ public class BookDaoImpl implements BookDao {
 
     @Override
     public List<Store> findAllStoresWithBook(Book book) {
-        List<Store> allStoresWithBook = new ArrayList<>();
+        List<Store> allStoresWithBook = book.getStores();
         try (Connection connection = ConnectionPool.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL_STORES_WITH_BOOK)) {
             preparedStatement.setString(1, book.getTitle());
@@ -77,7 +77,7 @@ public class BookDaoImpl implements BookDao {
             while (resultSet.next()) {
                 Store store = Store.builder()
                         .id(resultSet.getInt(STORE_ID))
-                        .address(resultSet.getString(STORE_ADDRESS))
+                        .city(resultSet.getString(STORE_CITY))
                         .build();
                 allStoresWithBook.add(store);
             }
@@ -92,7 +92,7 @@ public class BookDaoImpl implements BookDao {
         try (Connection connection = ConnectionPool.getConnection();
              CallableStatement callableStatement = connection.prepareCall(ADD_NEW_BOOK)) {
             List<String> storesAddresses = new ArrayList<>();
-            book.getStores().stream().forEach(store -> storesAddresses.add(store.getAddress()));
+            book.getStores().stream().forEach(store -> storesAddresses.add(store.getCity()));
             Array storesSqlArray = connection.createArrayOf("text", storesAddresses.toArray());
             callableStatement.setString(1, book.getTitle());
             callableStatement.setString(2, book.getAuthor().getName());
