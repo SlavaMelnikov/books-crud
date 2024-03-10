@@ -19,7 +19,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 @Testcontainers
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class StoreDaoTest {
+class StoreDaoTest {
     @Container
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres")
             .withInitScript("test-schema.sql");
@@ -33,6 +33,7 @@ public class StoreDaoTest {
     @AfterAll
     static void afterAll() {
         postgres.stop();
+        ConnectionPool.turnOffTestContainersConnections();
     }
 
     @BeforeEach
@@ -49,7 +50,7 @@ public class StoreDaoTest {
     @Order(1)
     @Test
     @DisplayName("Получение количества магазинов")
-    public void shouldCountStores() {
+    void shouldCountStores() {
         int numberOfStores = storeDao.countStores();
         assertEquals(4, numberOfStores);
     }
@@ -57,7 +58,7 @@ public class StoreDaoTest {
     @Order(2)
     @Test
     @DisplayName("Получение списка всех магазинов")
-    public void shouldFindAllStores() {
+    void shouldFindAllStores() {
         List<Store> stores = storeDao.findAllStores();
         List<String> expected = Arrays.asList("Гомель", "Минск", "Брест", "Гродно");
         List<String> actual = new ArrayList<>();
@@ -70,7 +71,7 @@ public class StoreDaoTest {
     @Order(3)
     @Test
     @DisplayName("Поиск магазина")
-    public void shouldFindStore() {
+    void shouldFindStore() {
         Store testStore = Store.builder()
                 .city("Минск")
                 .build();
@@ -81,7 +82,7 @@ public class StoreDaoTest {
     @Order(4)
     @Test
     @DisplayName("Получение всех книг в магазине")
-    public void shouldFindAllBooksInStore() {
+    void shouldFindAllBooksInStore() {
         Store testStore = Store.builder()
                 .city("Гомель")
                 .books(new ArrayList<>())
@@ -98,7 +99,7 @@ public class StoreDaoTest {
     @Order(5)
     @Test
     @DisplayName("Добавление нового магазина")
-    public void shouldAddNewStore() {
+    void shouldAddNewStore() {
         Store newStore = Store.builder()
                 .city("Москва")
                 .build();
@@ -111,7 +112,7 @@ public class StoreDaoTest {
     @Order(6)
     @Test
     @DisplayName("Удаление магазина")
-    public void shouldRemoveStore() {
+    void shouldRemoveStore() {
         Store store = Store.builder()
                 .city("Москва")
                 .build();

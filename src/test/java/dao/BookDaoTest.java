@@ -20,7 +20,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 @Testcontainers
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class BookDaoTest {
+class BookDaoTest {
     @Container
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres")
             .withInitScript("test-schema.sql");
@@ -34,6 +34,7 @@ public class BookDaoTest {
     @AfterAll
     static void afterAll() {
         postgres.stop();
+        ConnectionPool.turnOffTestContainersConnections();
     }
 
     @BeforeEach
@@ -50,7 +51,7 @@ public class BookDaoTest {
     @Order(1)
     @Test
     @DisplayName("Получение количества книг")
-    public void shouldCountBooks() {
+    void shouldCountBooks() {
         int numberOfBooks = bookDao.countBooks();
         assertEquals(3, numberOfBooks);
     }
@@ -58,7 +59,7 @@ public class BookDaoTest {
     @Order(2)
     @Test
     @DisplayName("Получение книги по id")
-    public void shouldFindBookById() {
+    void shouldFindBookById() {
         Book testBook = bookDao.findBookById(1);
         assertEquals(1, testBook.getId());
     }
@@ -66,7 +67,7 @@ public class BookDaoTest {
     @Order(3)
     @Test
     @DisplayName("Получение книги по названию")
-    public void shouldFindBookByTitle() {
+    void shouldFindBookByTitle() {
         Book testBook = bookDao.findBookByTitle("Тестовая книга 1");
         assertEquals("Тестовая книга 1", testBook.getTitle());
     }
@@ -74,19 +75,19 @@ public class BookDaoTest {
     @Order(4)
     @Test
     @DisplayName("Изменение цены книги")
-    public void shouldUpdateBookPrice() {
+    void shouldUpdateBookPrice() {
         Book testBook = Book.builder()
                 .title("Тестовая книга 1")
                 .price(1000)
                 .build();
         bookDao.updatePrice(testBook);
-        assertEquals(bookDao.findBookByTitle("Тестовая книга 1").getPrice(), 1000);
+        assertEquals(1000, bookDao.findBookByTitle("Тестовая книга 1").getPrice());
     }
 
     @Order(5)
     @Test
     @DisplayName("Поиск всех магазинов с книгой")
-    public void shouldFindAllStoresWithBook() {
+    void shouldFindAllStoresWithBook() {
         Book book = bookDao.findBookByTitle("Тестовая книга 2");
         book.setStores(new ArrayList<>());
         List<Store> stores = bookDao.findAllStoresWithBook(book);
@@ -98,7 +99,7 @@ public class BookDaoTest {
     @Order(6)
     @Test
     @DisplayName("Добавление новой книги")
-    public void shouldAddNewBook() {
+    void shouldAddNewBook() {
         Author newBookAuthor = Author.builder()
                 .name("Автор новой книги")
                 .build();
@@ -117,7 +118,7 @@ public class BookDaoTest {
     @Order(7)
     @Test
     @DisplayName("Удаление книги по id")
-    public void shouldRemoveBookById() {
+    void shouldRemoveBookById() {
         int booksBeforeRemoving = bookDao.countBooks();
         bookDao.removeBookById(2);
         int booksAfterRemoving = bookDao.countBooks();
@@ -127,7 +128,7 @@ public class BookDaoTest {
     @Order(8)
     @Test
     @DisplayName("Удаление книги по названию")
-    public void shouldRemoveBookByTitle() {
+    void shouldRemoveBookByTitle() {
         int booksBeforeRemoving = bookDao.countBooks();
         bookDao.removeBookByTitle("Тестовая книга 3");
         int booksAfterRemoving = bookDao.countBooks();
