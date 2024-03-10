@@ -13,4 +13,5 @@ public interface BookDao {
     void updatePrice(Book book);
     void removeBookById(int id);
     void removeBookByTitle(String title);
+    int countBooks();
 }

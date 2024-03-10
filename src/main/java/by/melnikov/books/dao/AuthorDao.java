@@ -12,4 +12,5 @@ public interface AuthorDao {
     void addNewAuthor(Author author);
     void removeAuthorById(int id);
     void removeAuthorByName(String name);
+    int countAuthors();
 }

@@ -78,4 +78,9 @@ public class AuthorServiceImpl implements AuthorService {
         authorDao.removeAuthorByName(name);
         return AuthorMapper.INSTANCE.authorToAuthorDto(author);
     }
+
+    @Override
+    public int countAuthors() {
+        return authorDao.countAuthors();
+    }
 }

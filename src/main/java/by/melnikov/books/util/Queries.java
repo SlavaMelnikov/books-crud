@@ -41,6 +41,7 @@ public class Queries {
                                                          DELETE FROM book
                                                          WHERE title = ?
                                                       """;
+    public static final String COUNT_BOOKS = "SELECT COUNT(book_id) FROM book";
 
     /*
     Queries for AuthorDao
@@ -71,6 +72,7 @@ public class Queries {
                                                           DELETE FROM author
                                                           WHERE name = ?
                                                        """;
+    public static final String COUNT_AUTHORS = "SELECT COUNT(author_id) FROM author";
 
     /*
     Queries for StoreDao
@@ -97,4 +99,5 @@ public class Queries {
                                                  DELETE FROM store
                                                  WHERE city = ?
                                               """;
+    public static final String COUNT_STORES = "SELECT COUNT(store_id) FROM store";
 }

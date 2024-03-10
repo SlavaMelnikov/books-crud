@@ -6,10 +6,7 @@ import by.melnikov.books.entity.Book;
 import by.melnikov.books.entity.Store;
 import by.melnikov.books.exception.DaoException;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -97,5 +94,20 @@ public class StoreDaoImpl implements StoreDao {
         } catch (SQLException e) {
             throw new DaoException(String.format("Error while trying remove store. %s", e.getMessage()));
         }
+    }
+
+    @Override
+    public int countStores() {
+        int numberOfStores = 0;
+        try (Connection connection = ConnectionPool.getConnection();
+             Statement statement = connection.createStatement()) {
+            ResultSet resultSet = statement.executeQuery(COUNT_STORES);
+            if (resultSet.next()) {
+                numberOfStores = resultSet.getInt(1);
+            }
+        } catch (SQLException e) {
+            throw new DaoException(String.format("Error while trying to count stores. %s", e.getMessage()));
+        }
+        return numberOfStores;
     }
 }

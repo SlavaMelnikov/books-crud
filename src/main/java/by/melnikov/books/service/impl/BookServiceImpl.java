@@ -73,7 +73,7 @@ public class BookServiceImpl implements BookService {
         if (book == null) {
             throw new ServiceException(String.format("Not found book with id: %d", id));
         }
-        bookDao.removeBookById(book.getId());
+        bookDao.removeBookById(id);
         return BookMapper.INSTANCE.bookToBookDto(book);
     }
 
@@ -85,5 +85,10 @@ public class BookServiceImpl implements BookService {
         }
         bookDao.removeBookByTitle(book.getTitle());
         return BookMapper.INSTANCE.bookToBookDto(book);
+    }
+
+    @Override
+    public int countBooks() {
+        return bookDao.countBooks();
     }
 }

@@ -108,4 +108,19 @@ public class AuthorDaoImpl implements AuthorDao {
                     e.getMessage()));
         }
     }
+
+    @Override
+    public int countAuthors() {
+        int numberOfAuthors = 0;
+        try (Connection connection = ConnectionPool.getConnection();
+             Statement statement = connection.createStatement()) {
+            ResultSet resultSet = statement.executeQuery(COUNT_AUTHORS);
+            if (resultSet.next()) {
+                numberOfAuthors = resultSet.getInt(1);
+            }
+        } catch (SQLException e) {
+            throw new DaoException(String.format("Error while trying to count authors. %s", e.getMessage()));
+        }
+        return numberOfAuthors;
+    }
 }

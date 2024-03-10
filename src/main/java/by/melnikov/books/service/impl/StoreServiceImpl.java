@@ -57,4 +57,9 @@ public class StoreServiceImpl implements StoreService {
         Store store = StoreMapper.INSTANCE.storeDtoToStore(storeDto);
         storeDao.removeStore(store);
     }
+
+    @Override
+    public int countStores() {
+        return storeDao.countStores();
+    }
 }

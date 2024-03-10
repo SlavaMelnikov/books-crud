@@ -140,4 +140,19 @@ public class BookDaoImpl implements BookDao {
                     e.getMessage()));
         }
     }
+
+    @Override
+    public int countBooks() {
+        int numberOfBooks = 0;
+        try (Connection connection = ConnectionPool.getConnection();
+             Statement statement = connection.createStatement()) {
+            ResultSet resultSet = statement.executeQuery(COUNT_BOOKS);
+            if (resultSet.next()) {
+                numberOfBooks = resultSet.getInt(1);
+            }
+        } catch (SQLException e) {
+            throw new DaoException(String.format("Error while trying to count books. %s", e.getMessage()));
+        }
+        return numberOfBooks;
+    }
 }

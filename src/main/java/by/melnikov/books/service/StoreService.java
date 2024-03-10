@@ -11,4 +11,5 @@ public interface StoreService {
     List<BookDto> findAllBooksInStore(StoreDto storeDto);
     void addNewStore(StoreDto storeDto);
     void removeStore(StoreDto storeDto);
+    int countStores();
 }

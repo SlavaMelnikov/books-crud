@@ -9,8 +9,8 @@ import java.sql.SQLException;
 import java.util.ResourceBundle;
 
 public class ConnectionPool {
-    private static final HikariConfig config = new HikariConfig();
-    private static final HikariDataSource connectionPool;
+    private static HikariConfig config = new HikariConfig();
+    private static HikariDataSource connectionPool;
 
     static {
         ResourceBundle resourceBundle = ResourceBundle.getBundle("database");
@@ -30,5 +30,19 @@ public class ConnectionPool {
         } catch (SQLException e) {
             throw new ConnectionException("Can't get connection: " + e.getMessage());
         }
+    }
+
+    /*
+        Включает использование тестовых соединеный из testcontainers.
+     */
+    public static void turnOnTestContainersConnections(HikariDataSource testDataSource) {
+        connectionPool = testDataSource;
+    }
+
+    /*
+        Выключает использование тестовых соединеный.
+    */
+    public static void turnOffTestContainersConnections() {
+        connectionPool = new HikariDataSource(config);
     }
 }

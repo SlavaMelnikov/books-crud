@@ -13,4 +13,5 @@ public interface BookService {
     boolean updatePrice(BookDto bookDto);
     BookDto removeBookById(int id);
     BookDto removeBookByTitle(String title);
+    int countBooks();
 }

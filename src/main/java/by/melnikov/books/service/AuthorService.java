@@ -12,4 +12,5 @@ public interface AuthorService {
     boolean addNewAuthor(AuthorDto authorDto);
     AuthorDto removeAuthorById(int id);
     AuthorDto removeAuthorByName(String name);
+    int countAuthors();
 }

@@ -11,4 +11,5 @@ public interface StoreDao {
     List<Book> findAllBooksInStore(Store store);
     void addNewStore(Store store);
     void removeStore(Store store);
+    int countStores();
 }

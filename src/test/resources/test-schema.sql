@@ -1,20 +1,19 @@
+DROP TABLE IF EXISTS book CASCADE;
+DROP TABLE IF EXISTS author CASCADE;
+DROP TABLE IF EXISTS store CASCADE;
+DROP TABLE IF EXISTS store_has_books CASCADE;
+
 create sequence author_id_seq
     as integer
     maxvalue 200000000;
-
-alter sequence author_id_seq owner to postgres;
 
 create sequence book_id_seq
     as integer
     maxvalue 200000000;
 
-alter sequence book_id_seq owner to postgres;
-
 create sequence store_id_seq
     as integer
     maxvalue 200000000;
-
-alter sequence store_id_seq owner to postgres;
 
 create table author
 (
@@ -25,9 +24,6 @@ create table author
         constraint unique_author_name
             unique
 );
-
-alter table author
-    owner to postgres;
 
 create table book
 (
@@ -44,9 +40,6 @@ create table book
     price   integer                                          not null
 );
 
-alter table book
-    owner to postgres;
-
 create table store
 (
     store_id integer default nextval('store_id_seq'::regclass) not null
@@ -56,9 +49,6 @@ create table store
         constraint unique_store_address
             unique
 );
-
-alter table store
-    owner to postgres;
 
 create table store_has_books
 (
@@ -71,9 +61,6 @@ create table store_has_books
             references book
             on delete cascade
 );
-
-alter table store_has_books
-    owner to postgres;
 
 create procedure add_book(IN _title text, IN _author_name text, IN _price integer, IN _stores_cities text[])
     language plpgsql
@@ -122,5 +109,21 @@ BEGIN
 END;
 $$;
 
-alter procedure add_book(text, text, integer, text[]) owner to postgres;
+INSERT INTO author (name) VALUES ('Иван Иванов');
+INSERT INTO book (title, price, author) VALUES ('Тестовая книга 1', 100, currval('author_id_seq'));
+INSERT INTO store (city) VALUES ('Гомель');
+INSERT INTO store_has_books (store_id, book_id) VALUES (currval('store_id_seq'), currval('book_id_seq'));
+
+INSERT INTO author (name) VALUES ('Петр Петров');
+INSERT INTO book (title, price, author) VALUES ('Тестовая книга 2', 200, currval('author_id_seq'));
+INSERT INTO store (city) VALUES ('Минск');
+INSERT INTO store_has_books (store_id, book_id) VALUES (currval('store_id_seq'), currval('book_id_seq'));
+INSERT INTO store (city) VALUES ('Брест');
+INSERT INTO store_has_books (store_id, book_id) VALUES (currval('store_id_seq'), currval('book_id_seq'));
+
+INSERT INTO author (name) VALUES ('Сергей Сергеев');
+INSERT INTO book (title, price, author) VALUES ('Тестовая книга 3', 300, currval('author_id_seq'));
+INSERT INTO store (city) VALUES ('Гродно');
+INSERT INTO store_has_books (store_id, book_id) VALUES (currval('store_id_seq'), currval('book_id_seq'));
+
 
