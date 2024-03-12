@@ -93,7 +93,7 @@ BEGIN
     -- Получаем ID автора
     SELECT author_id INTO _author_id FROM author WHERE name = _author_name;
 
-    -- Добавляем книгу в таблицу 'book' если ее там еще нет
+    -- Добавляем книгу в таблицу 'book'
     INSERT INTO book (title, author, price)
     VALUES (_title, _author_id, _price)
     ON CONFLICT (title) DO NOTHING;
@@ -123,4 +123,3 @@ END;
 $$;
 
 alter procedure add_book(text, text, integer, text[]) owner to postgres;
-
