@@ -21,15 +21,14 @@ import static by.melnikov.books.util.RequestParameters.*;
 @WebServlet("/book/*")
 public class BookServlet extends HttpServlet {
     private final BookService bookService;
-    private final Gson gson;
+    private final Gson gson = new Gson();
 
     public BookServlet() {
         bookService = new BookServiceImpl();
-        gson = new Gson();
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) {
+    public void doPost(HttpServletRequest request, HttpServletResponse response) {
         response.setContentType(RESPONSE_TYPE);
         BookDto bookDto = getBookDtoFromRequestBody(request);
         bookService.addNewBook(bookDto);
@@ -71,7 +70,7 @@ public class BookServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) {
+    public void doGet(HttpServletRequest request, HttpServletResponse response) {
         if (request.getPathInfo() != null && request.getPathInfo().equals("/stores") ) {
             String bookTitle = request.getParameter(TITLE_REQUEST_PARAMETER).replace("_", " ");
             BookDto bookDto = BookDto.builder()

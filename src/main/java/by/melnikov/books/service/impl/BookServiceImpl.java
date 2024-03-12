@@ -21,6 +21,10 @@ public class BookServiceImpl implements BookService {
         bookDao = new BookDaoImpl();
     }
 
+    public BookServiceImpl(BookDao bookDao) {
+        this.bookDao = bookDao;
+    }
+
     @Override
     public BookDto findBookById(int id) {
         Book book = bookDao.findBookById(id);

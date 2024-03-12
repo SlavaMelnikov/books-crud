@@ -1,15 +1,14 @@
 package by.melnikov.books.dto;
 
 import by.melnikov.books.entity.Book;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 import java.util.function.Function;
 
-@Getter
-@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
 @Builder
 public class BookDto {
     private int id;

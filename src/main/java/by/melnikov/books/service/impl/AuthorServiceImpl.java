@@ -20,6 +20,10 @@ public class AuthorServiceImpl implements AuthorService {
         authorDao = new AuthorDaoImpl();
     }
 
+    public AuthorServiceImpl(AuthorDao authorDao) {
+        this.authorDao = authorDao;
+    }
+
     @Override
     public AuthorDto findAuthorById(int id) {
         Author author = authorDao.findAuthorById(id);

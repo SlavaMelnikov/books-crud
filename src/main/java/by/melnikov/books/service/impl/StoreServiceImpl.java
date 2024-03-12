@@ -20,6 +20,10 @@ public class StoreServiceImpl implements StoreService {
         storeDao = new StoreDaoImpl();
     }
 
+    public StoreServiceImpl(StoreDao storeDao) {
+        this.storeDao = storeDao;
+    }
+
     @Override
     public StoreDto findStore(StoreDto storeDto) {
         Store store = StoreMapper.INSTANCE.storeDtoToStore(storeDto);

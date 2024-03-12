@@ -1,14 +1,13 @@
 package by.melnikov.books.entity;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter
-@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
 @Builder
 public class Store {
     private int id;

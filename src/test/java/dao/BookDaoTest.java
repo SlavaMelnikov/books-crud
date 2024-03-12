@@ -51,7 +51,7 @@ class BookDaoTest {
     @Order(1)
     @Test
     @DisplayName("Получение количества книг")
-    void shouldCountBooks() {
+    void testCountBooks() {
         int numberOfBooks = bookDao.countBooks();
         assertEquals(3, numberOfBooks);
     }
@@ -59,7 +59,7 @@ class BookDaoTest {
     @Order(2)
     @Test
     @DisplayName("Получение книги по id")
-    void shouldFindBookById() {
+    void testFindBookById() {
         Book testBook = bookDao.findBookById(1);
         assertEquals(1, testBook.getId());
     }
@@ -67,7 +67,7 @@ class BookDaoTest {
     @Order(3)
     @Test
     @DisplayName("Получение книги по названию")
-    void shouldFindBookByTitle() {
+    void testFindBookByTitle() {
         Book testBook = bookDao.findBookByTitle("Тестовая книга 1");
         assertEquals("Тестовая книга 1", testBook.getTitle());
     }
@@ -75,7 +75,7 @@ class BookDaoTest {
     @Order(4)
     @Test
     @DisplayName("Изменение цены книги")
-    void shouldUpdateBookPrice() {
+    void testUpdateBookPrice() {
         Book testBook = Book.builder()
                 .title("Тестовая книга 1")
                 .price(1000)
@@ -87,7 +87,7 @@ class BookDaoTest {
     @Order(5)
     @Test
     @DisplayName("Поиск всех магазинов с книгой")
-    void shouldFindAllStoresWithBook() {
+    void testFindAllStoresWithBook() {
         Book book = bookDao.findBookByTitle("Тестовая книга 2");
         book.setStores(new ArrayList<>());
         List<Store> stores = bookDao.findAllStoresWithBook(book);
@@ -99,7 +99,7 @@ class BookDaoTest {
     @Order(6)
     @Test
     @DisplayName("Добавление новой книги")
-    void shouldAddNewBook() {
+    void testAddNewBook() {
         Author newBookAuthor = Author.builder()
                 .name("Автор новой книги")
                 .build();
@@ -118,7 +118,7 @@ class BookDaoTest {
     @Order(7)
     @Test
     @DisplayName("Удаление книги по id")
-    void shouldRemoveBookById() {
+    void testRemoveBookById() {
         int booksBeforeRemoving = bookDao.countBooks();
         bookDao.removeBookById(2);
         int booksAfterRemoving = bookDao.countBooks();
@@ -128,7 +128,7 @@ class BookDaoTest {
     @Order(8)
     @Test
     @DisplayName("Удаление книги по названию")
-    void shouldRemoveBookByTitle() {
+    void testRemoveBookByTitle() {
         int booksBeforeRemoving = bookDao.countBooks();
         bookDao.removeBookByTitle("Тестовая книга 3");
         int booksAfterRemoving = bookDao.countBooks();

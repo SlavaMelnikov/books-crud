@@ -50,7 +50,7 @@ class AuthorDaoTest {
     @Order(1)
     @Test
     @DisplayName("Получение количества авторов")
-    void shouldCountAuthors() {
+    void testCountAuthors() {
         int numberOfAuthors = authorDao.countAuthors();
         assertEquals(3, numberOfAuthors);
     }
@@ -58,7 +58,7 @@ class AuthorDaoTest {
     @Order(2)
     @Test
     @DisplayName("Получение автора по id")
-    void shouldFindAuthorById() {
+    void testFindAuthorById() {
         Author testAuthor = authorDao.findAuthorById(1);
         assertEquals(1, testAuthor.getId());
     }
@@ -66,7 +66,7 @@ class AuthorDaoTest {
     @Order(3)
     @Test
     @DisplayName("Получение автора по имени")
-    void shouldFindAuthorByName() {
+    void testFindAuthorByName() {
         Author testAuthor = authorDao.findAuthorByName("Иван Иванов");
         assertEquals("Иван Иванов", testAuthor.getName());
     }
@@ -74,7 +74,7 @@ class AuthorDaoTest {
     @Order(4)
     @Test
     @DisplayName("Поиск всех книг автора")
-    void shouldFindAllStoresWithBook() {
+    void testFindAllStoresWithBook() {
         Author author = authorDao.findAuthorByName("Иван Иванов");
         author.setBooks(new ArrayList<>());
         List<Book> books = authorDao.findAllAuthorBooks(author);
@@ -86,7 +86,7 @@ class AuthorDaoTest {
     @Order(5)
     @Test
     @DisplayName("Добавление нового автора")
-    void shouldAddNewAuthor() {
+    void testAddNewAuthor() {
         Author newAuthor = Author.builder()
                 .name("Новый автор")
                 .build();
@@ -99,7 +99,7 @@ class AuthorDaoTest {
     @Order(6)
     @Test
     @DisplayName("Удаление автора по id")
-    void shouldRemoveAuthorById() {
+    void testRemoveAuthorById() {
         int authorsBeforeRemoving = authorDao.countAuthors();
         authorDao.removeAuthorById(2);
         int authorsAfterRemoving = authorDao.countAuthors();
@@ -109,7 +109,7 @@ class AuthorDaoTest {
     @Order(7)
     @Test
     @DisplayName("Удаление автора по названию")
-    void shouldRemoveAuthorByName() {
+    void testRemoveAuthorByName() {
         int authorsBeforeRemoving = authorDao.countAuthors();
         authorDao.removeAuthorByName("Новый автор");
         int authorsAfterRemoving = authorDao.countAuthors();
